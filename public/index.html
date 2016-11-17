@@ -62,7 +62,8 @@
       function postSkills() {
         console.log("POSTING SKILLS!");
         $.ajax({
-            url: 'http://127.0.0.1:1337/findMatch/',
+            //url: 'http://127.0.0.1:1337/findMatch/',
+            url: 'https://jobswap-server.herokuapp.com/findMatch',
             type: 'POST',
             data: 'jobLocation=' + jobLocation + '&jobSummary=' + jobSummary,
             success: function(data) {
