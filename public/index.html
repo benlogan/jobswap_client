@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <!--
+      Notice the use of %PUBLIC_URL% in the tag above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>Job Swap!</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="//platform.linkedin.com/in.js">
+      api_key: XXXX
+      onLoad: linkedInLoad
+      authorize: true
+    </script>
+    <script type="text/javascript">
+      //var linkedInLoaded = false;
+      function linkedInLoad() {
+        var auth = IN.User.isAuthorized();
+        console.log("AUTH STATUS : " + auth);
+
+        if(auth == false) {
+          IN.User.authorize(authorised);
+        }
+        else {
+          apiRequest();
+          //authorised();
+        }
+      }
+
+      /*
+      function authorised() {
+        linkedInLoaded = true;
+      }
+      */
+
+      ///*
+      function apiRequest() {
+        var url = "people/~:(summary,location,skills,specialties)?format=json";
+        IN.API.Raw(url).method("GET").body().result(apiResponse);
+      }
+      var jobLocation = "DEFAULT LOCATION";
+      var jobSummary = "DEFAULT SUMMARY";
+      function apiResponse(data) {
+        console.log("API RESPONSE : " + data);
+        jobLocation = data.location.name;
+        jobSummary = data.summary;
+        console.log("location : " + jobLocation);
+        console.log("job summary : " + jobSummary);
+        document.getElementById("summary").innerHTML = jobSummary;
+        document.getElementById("location").innerHTML = jobLocation;
+      }
+      //*/
+
+      function postSkills() {
+        console.log("POSTING SKILLS!");
+        $.ajax({
+            url: 'http://127.0.0.1:1337/findMatch/',
+            type: 'POST',
+            data: 'jobLocation=' + jobLocation + '&jobSummary=' + jobSummary,
+            success: function(data) {
+                // we don't end up in here, no response!
+                //document.getElementById("results").innerHTML = data;
+            },
+            complete: function(data) {
+                console.log("Skills POST complete - refreshing page!");
+                //refreshPage();
+                document.getElementById("results").innerHTML = data.responseText;
+            }
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <H2>My Job Summary</H2>
+    <div id="summary"></div>
+    <H2>My Current Location</H2>
+    <div id="location"></div>
+    <button onclick="postSkills()">Find a match!</button>
+    <div id="results"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start`.
+      To create a production bundle, use `npm run build`.
+    -->
+  </body>
+</html>
