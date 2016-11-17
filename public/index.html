@@ -43,17 +43,21 @@
 
       ///*
       function apiRequest() {
-        var url = "people/~:(summary,location,skills,specialties)?format=json";
+        var url = "people/~:(formatted-name,summary,location,skills,specialties)?format=json";
         IN.API.Raw(url).method("GET").body().result(apiResponse);
       }
+      var name;
       var jobLocation = "DEFAULT LOCATION";
       var jobSummary = "DEFAULT SUMMARY";
+
       function apiResponse(data) {
         console.log("API RESPONSE : " + data);
+        name = data.formattedName;
         jobLocation = data.location.name;
         jobSummary = data.summary;
         console.log("location : " + jobLocation);
         console.log("job summary : " + jobSummary);
+        document.getElementById("name").innerHTML = name;
         document.getElementById("summary").innerHTML = jobSummary;
         document.getElementById("location").innerHTML = jobLocation;
       }
@@ -61,11 +65,12 @@
 
       function postSkills() {
         console.log("POSTING SKILLS!");
+        var search = $('#matchString').val();//"Agile";
         $.ajax({
             //url: 'http://127.0.0.1:1337/findMatch/',
             url: 'https://jobswap-server.herokuapp.com/findMatch',
             type: 'POST',
-            data: 'jobLocation=' + jobLocation + '&jobSummary=' + jobSummary,
+            data: 'name=' + name + '&jobLocation=' + jobLocation + '&jobSummary=' + jobSummary + '&search=' + search,
             success: function(data) {
                 // we don't end up in here, no response!
                 //document.getElementById("results").innerHTML = data;
@@ -82,10 +87,13 @@
   <body>
     <div id="root"></div>
 
+    <H2>My Name</H2>
+    <div id="name"></div>
     <H2>My Job Summary</H2>
     <div id="summary"></div>
     <H2>My Current Location</H2>
     <div id="location"></div>
+    <input type="text" id="matchString">
     <button onclick="postSkills()">Find a match!</button>
     <div id="results"></div>
     <!--
