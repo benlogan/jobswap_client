@@ -27,7 +27,7 @@
         console.log("AUTH STATUS : " + auth);
 
         if(auth == false) {
-          IN.User.authorize(authorised);
+          IN.User.authorize(apiRequest);
         }
         else {
           apiRequest();
